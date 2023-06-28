@@ -1,24 +1,23 @@
 package com.example.hanghaeblog.Service;
 
+import com.example.hanghaeblog.dto.LoginRequestDto;
 import com.example.hanghaeblog.dto.SignupRequestDto;
 import com.example.hanghaeblog.entity.User;
+import com.example.hanghaeblog.jwt.JwtUtil;
 import com.example.hanghaeblog.repository.UserRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private final JwtUtil jwtUtil;
 
-    // ADMIN_TOKEN
-    private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
-
-    public void signup(SignupRequestDto requestDto) {
+    public User  signup(SignupRequestDto requestDto) {
         String username = requestDto.getUsername();
         String password = requestDto.getPassword();
 
@@ -30,6 +29,24 @@ public class UserService {
 
         // 사용자 등록
         User user = new User(username, password);
-        userRepository.save(user);
+        return userRepository.save(user);
+    }
+
+    public String login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
+        String username = loginRequestDto.getUsername();
+        String password = loginRequestDto.getPassword();
+
+        // 사용자 존재하는지 확인
+        User user = userRepository.findByUsername(username).orElseThrow(
+                () -> new IllegalArgumentException("등록된 사용자가 없습니다.")
+        );
+
+        // 비밀번호 확인
+        if(!user.getPassword().equals(password)){
+            throw  new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername()));
+
+        return username;
     }
 }
