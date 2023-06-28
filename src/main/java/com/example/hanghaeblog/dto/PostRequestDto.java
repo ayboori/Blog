@@ -14,6 +14,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostRequestDto {
+    // 게시글 작성 시 필요한 정보를 담는 dto
+
     private Long id;
     private String title;
     private String userName;
