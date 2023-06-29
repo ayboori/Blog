@@ -17,17 +17,17 @@ public class UserService {
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
 
-    public User signup(SignupRequestDto requestDto) {
+    public User signup(SignupRequestDto requestDto) { // 가입할 데이터 받아오기
         String username = requestDto.getUsername();
         String password = requestDto.getPassword();
 
-        // 회원 중복 확인
+        // 회원 중복 확인 - username에 unique 속성 있음
         Optional<User> checkUsername = userRepository.findByUsername(username);
-        if (checkUsername.isPresent()) {
+        if (checkUsername.isPresent()) { // Optional 타입 내의 메소드
             throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
         }
 
-        // 사용자 등록
+        // 사용자 등록을 위해 객체 생성
         User user = new User(username, password);
         return userRepository.save(user);
     }
@@ -46,7 +46,6 @@ public class UserService {
             throw  new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername()));
-
         return username;
     }
 }

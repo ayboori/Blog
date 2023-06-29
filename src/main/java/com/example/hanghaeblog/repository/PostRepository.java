@@ -1,6 +1,5 @@
 package com.example.hanghaeblog.repository;
 
-
 import com.example.hanghaeblog.dto.PostRequestDto;
 import com.example.hanghaeblog.dto.PostResponseDto;
 import com.example.hanghaeblog.entity.Post;
@@ -8,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,8 +15,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+@Repository
 public class PostRepository {
-
     private final JdbcTemplate jdbcTemplate;
 
     public PostRepository(JdbcTemplate jdbcTemplate) {
@@ -69,9 +69,9 @@ public class PostRepository {
     }
 
     // 수정
-    public void update(Long id, String password, PostRequestDto requestDto) {
-        String sql = "UPDATE Post SET title = ?, username = ?, content = ? WHERE id = ?, password = ?";
-        jdbcTemplate.update(sql, requestDto, requestDto.getTitle(), requestDto.getUserName(), requestDto.getContent(), id, password);
+    public void update(Long id, PostRequestDto requestDto) {
+        String sql = "UPDATE Post SET title = ?, username = ?, content = ?, password = ? WHERE id = ?";
+        jdbcTemplate.update(sql, requestDto.getTitle(), requestDto.getUserName(), requestDto.getContent(), requestDto.getPassword(), id);
     }
 
     public void delete(Long id) {
@@ -87,7 +87,7 @@ public class PostRepository {
             if (resultSet.next()) {
                 Post post = new Post();
                 post.setUserName(resultSet.getString("username"));
-                post.setContent(resultSet.getString("contents"));
+                post.setContent(resultSet.getString("content"));
                 return post;
             } else {
                 return null;

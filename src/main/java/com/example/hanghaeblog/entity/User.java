@@ -5,8 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-// id는 고유값 (DB에서 자동 생성, userName, password로 회원가입 구현
-//
+// id는 고유값 (DB에서 자동 생성, userName, password로 회원가입 구현)
 @Entity
 @Getter
 @Setter

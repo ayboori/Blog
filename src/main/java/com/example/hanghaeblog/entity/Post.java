@@ -7,9 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
 
 @Getter
 @Setter
@@ -23,27 +21,26 @@ public class Post {
     private LocalDate localDate;
     private String password;
 
-    public Post(PostRequestDto requestDto) {
+    public Post(PostRequestDto requestDto, User user) { // 회원 이름, 비밀번호는 user에서 가져오기
         this.title = requestDto.getTitle();
-        this.userName = requestDto.getUserName();
+        this.userName = user.getUsername();
         this.content = requestDto.getContent();
-        this.password = requestDto.getPassword();
-        this.localDate = LocalDate.now();  // 현재 시간
-
-    }
-
-    public void update(PostRequestDto postRequestDto) {
-        // 제목, 작성자명, 작성 내용을 수정
-        this.title = postRequestDto.getTitle();
-        this.userName = postRequestDto.getUserName();
-        this.content = postRequestDto.getContent();
-
+        this.password = user.getPassword();
         this.localDate = LocalDate.now();  // 현재 시간
     }
 
     public String getTextDate(){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        return localDate.format(formatter);
+        return LocalDate.now().format(formatter);
     }
 
+    // 수정
+    public void update(PostRequestDto requestDto) {
+        this.id = requestDto.getId();
+        this.title = requestDto.getTitle();
+        this.userName = requestDto.getUserName();
+        this.content = requestDto.getContent();
+        this.password = requestDto.getPassword();
+        this.localDate = LocalDate.now();  // 현재 시간
+    }
 }

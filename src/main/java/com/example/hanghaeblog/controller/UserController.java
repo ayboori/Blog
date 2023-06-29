@@ -27,11 +27,10 @@ public class UserController {
     private final UserService userService;
     private final JwtUtil jwtUtil;
 
+    // 로그인 성공 시 토큰 발급
     @PostMapping("/login-page")
     public  ResponseEntity<String> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
         String token = jwtUtil.createToken(userService.login(loginRequestDto, response)); // 로그인 수행, username 받아오기 > token 만들기
-        // 헤더에 토큰 추가
-        response.addHeader("Authorization", "Bearer " + token);
             return ResponseEntity.status(HttpStatus.OK).body("로그인 성공");
     }
 

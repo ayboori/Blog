@@ -30,10 +30,4 @@ public class PostResponseDto{
         this.localDate = post.getTextDate();
     }
 
-    public PostResponseDto(Long id, String userName, String content, String localDate) {
-        this.id = id;
-        this.userName = userName;
-        this.content = content;
-        this.localDate = localDate;
-    }
 }
