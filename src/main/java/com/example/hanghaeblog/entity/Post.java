@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Getter
@@ -18,7 +19,7 @@ public class Post {
     private String title;
     private String userName;
     private String content;
-    private LocalDate localDate;
+    private LocalDateTime localDate;
     private String password;
 
     public Post(PostRequestDto requestDto, User user) { // 회원 이름, 비밀번호는 user에서 가져오기
@@ -36,6 +37,6 @@ public class Post {
         this.userName = requestDto.getUserName();
         this.content = requestDto.getContent();
         this.password = requestDto.getPassword();
-        this.localDate = LocalDate.now();  // 현재 시간
+        this.localDate = LocalDateTime.now();  // 현재 시간
     }
 }

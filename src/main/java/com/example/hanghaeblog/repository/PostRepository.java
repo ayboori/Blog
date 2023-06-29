@@ -10,9 +10,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Repository
@@ -60,8 +58,11 @@ public class PostRepository {
                String title = rs.getString("title");
                 String userName = rs.getString("username");
                 String content = rs.getString("content");
-                String localDate = rs.getString("localDate");
-                return new PostResponseDto(title, userName, content, localDate);
+
+                // 작성 시간 가져오기
+                Timestamp timestamp = rs.getTimestamp("localDate");
+                LocalDateTime LocalDateTime = timestamp.toLocalDateTime();
+                return new PostResponseDto(title, userName, content, LocalDateTime);
             }
         });
     }
@@ -90,7 +91,7 @@ public class PostRepository {
 
                 // 작성 시간 가져오기
                 Timestamp timestamp = resultSet.getTimestamp("localDate");
-                LocalDate localDate = timestamp.toLocalDateTime().toLocalDate();
+                LocalDateTime localDate = timestamp.toLocalDateTime();
                 post.setLocalDate(localDate);
                 return post;
             } else {

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -21,7 +22,7 @@ public class PostRequestDto {
     private String userName;
     private String content;
     private String password;
-    private LocalDate localDate;
+    private LocalDateTime localDate;
 
     public PostRequestDto(Post post) {
         this.id = post.getId();

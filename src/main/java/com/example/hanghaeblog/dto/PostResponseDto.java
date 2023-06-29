@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Getter
@@ -18,17 +19,12 @@ public class PostResponseDto{
     private String title;
     private String userName;
     private String content;
-    private String localDate;
+    private LocalDateTime localDate;
 
     public PostResponseDto(Post post) {
         this.title = post.getTitle();
         this.userName = post.getUserName();
         this.content = post.getContent();
-        this.localDate = getTextDate(post.getLocalDate());
-    }
-
-    public String getTextDate(LocalDate localDate){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        return LocalDate.now().format(formatter);
+        this.localDate = post.getLocalDate();
     }
 }
