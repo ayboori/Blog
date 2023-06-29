@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
@@ -21,28 +22,24 @@ import java.util.List;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api")
+@RequestMapping("user")
 public class UserController {
     private final UserService userService;
     private final JwtUtil jwtUtil;
 
-    @PostMapping("/user/login-page")
-    public String login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
+    @PostMapping("/login-page")
+    public  ResponseEntity<String> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
         String token = jwtUtil.createToken(userService.login(loginRequestDto, response)); // 로그인 수행, username 받아오기 > token 만들기
         // 헤더에 토큰 추가
         response.addHeader("Authorization", "Bearer " + token);
-        return "로그인 성공";
+            return ResponseEntity.status(HttpStatus.OK).body("로그인 성공");
     }
 
     // 회원가입 API
     @ResponseBody
-    @PostMapping("/user/signup")
-    public String signup(@Valid  @RequestBody SignupRequestDto requestDto) {
+    @PostMapping("/signup")
+    public ResponseEntity<String> signup(@Valid  @RequestBody SignupRequestDto requestDto) {
         User user = userService.signup(requestDto);
-        if(user != null){
-            return "회원가입 성공";
-        }else{
-            return "회원가입 실패";
-        }
+            return ResponseEntity.status(HttpStatus.OK).body("회원가입 성공");
     }
 }
