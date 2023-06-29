@@ -4,6 +4,7 @@ import com.example.hanghaeblog.Service.UserService;
 import com.example.hanghaeblog.dto.LoginRequestDto;
 import com.example.hanghaeblog.dto.SignupRequestDto;
 import com.example.hanghaeblog.entity.User;
+import com.example.hanghaeblog.jwt.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,15 +24,14 @@ import java.util.List;
 @RequestMapping("api")
 public class UserController {
     private final UserService userService;
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/user/login-page")
     public String login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
-        // String token = userService.login(loginRequestDto, response);
-        if(userService.login(loginRequestDto, response) != null){
-            return "로그인 성공";
-        }else{
-            return "로그인 실패";
-        }
+        String token = jwtUtil.createToken(userService.login(loginRequestDto, response)); // 로그인 수행, username 받아오기 > token 만들기
+        // 헤더에 토큰 추가
+        response.addHeader("Authorization", "Bearer " + token);
+        return "로그인 성공";
     }
 
     // 회원가입 API

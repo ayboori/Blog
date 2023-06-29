@@ -63,30 +63,6 @@ public class JwtUtil {
     }
 
 
-    // 2. 생성된 JWT를 Cookie에 저장
-    public void addJwtToCookie(String token, HttpServletResponse res) {
-        try {
-            token = URLEncoder.encode(token, "utf-8").replaceAll("\\+", "%20"); // Cookie Value 에는 공백이 불가능해서 encoding 진행
-
-            Cookie cookie = new Cookie(AUTHORIZATION_HEADER, token); // Name-Value(인코딩한 토큰)
-            cookie.setPath("/");
-
-            // Response 객체에 Cookie 추가
-            res.addCookie(cookie);
-        } catch (UnsupportedEncodingException e) {
-            logger.error(e.getMessage());
-        }
-    }
-
-    // 3. Cookie에 들어있던 JWT 토큰을 Substring
-    public String substringToken(String tokenValue) {
-        if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(BEARER_PREFIX)) { // 공백이나 null이 아니고, bearer로 시작하는지
-            return tokenValue.substring(7); // "bearer " = 7자 / 순수한 token 값만 return
-        }
-        logger.error("Not Found Token");
-        throw new NullPointerException("Not Found Token");
-    }
-
     // 4. JWT 검증
     public boolean validateToken(String token) {
         try {
