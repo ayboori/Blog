@@ -26,12 +26,7 @@ public class Post {
         this.userName = user.getUsername();
         this.content = requestDto.getContent();
         this.password = user.getPassword();
-        this.localDate = LocalDate.now();  // 현재 시간
-    }
-
-    public String getTextDate(){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        return LocalDate.now().format(formatter);
+        this.localDate = requestDto.getLocalDate();  // 현재 시간
     }
 
     // 수정

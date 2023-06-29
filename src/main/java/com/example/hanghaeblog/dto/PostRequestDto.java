@@ -21,7 +21,7 @@ public class PostRequestDto {
     private String userName;
     private String content;
     private String password;
-    private String localDate;
+    private LocalDate localDate;
 
     public PostRequestDto(Post post) {
         this.id = post.getId();
@@ -29,6 +29,6 @@ public class PostRequestDto {
         this.userName = post.getUserName();
         this.content = post.getContent();
         this.password = post.getPassword();
-        this.localDate = post.getTextDate();
+        this.localDate = post.getLocalDate();
     }
 }

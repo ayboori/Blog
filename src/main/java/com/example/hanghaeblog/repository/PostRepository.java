@@ -9,10 +9,10 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Repository
@@ -57,13 +57,11 @@ public class PostRepository {
             @Override
             public PostResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
                 // SQL 의 결과로 받아온 Post 데이터들을 PostResponseDto 타입으로 변환해줄 메서드
-                Long id = rs.getLong("id");
                String title = rs.getString("title");
-                String password = rs.getString("password");
                 String userName = rs.getString("username");
                 String content = rs.getString("content");
                 String localDate = rs.getString("localDate");
-                return new PostResponseDto(id,title, userName, password,content, localDate);
+                return new PostResponseDto(title, userName, content, localDate);
             }
         });
     }
@@ -86,8 +84,14 @@ public class PostRepository {
         return jdbcTemplate.query(sql, resultSet -> {
             if (resultSet.next()) {
                 Post post = new Post();
+                post.setTitle(resultSet.getString("title"));
                 post.setUserName(resultSet.getString("username"));
                 post.setContent(resultSet.getString("content"));
+
+                // 작성 시간 가져오기
+                Timestamp timestamp = resultSet.getTimestamp("localDate");
+                LocalDate localDate = timestamp.toLocalDateTime().toLocalDate();
+                post.setLocalDate(localDate);
                 return post;
             } else {
                 return null;

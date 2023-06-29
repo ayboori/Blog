@@ -8,26 +8,27 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostResponseDto{
-    private Long id;
     private String title;
     private String userName;
     private String content;
-    private String password;
     private String localDate;
 
     public PostResponseDto(Post post) {
-        this.id = post.getId();
         this.title = post.getTitle();
         this.userName = post.getUserName();
         this.content = post.getContent();
-        this.password = post.getPassword();
-        this.localDate = post.getTextDate();
+        this.localDate = getTextDate(post.getLocalDate());
     }
 
+    public String getTextDate(LocalDate localDate){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        return LocalDate.now().format(formatter);
+    }
 }
