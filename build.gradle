@@ -22,7 +22,8 @@ repositories {
 }
 
 dependencies {
-
+	// Security
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 	// 허가
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	// JWT

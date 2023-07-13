@@ -4,6 +4,7 @@ import com.example.hanghaeblog.dto.PostRequestDto;
 import com.example.hanghaeblog.dto.PostResponseDto;
 import com.example.hanghaeblog.entity.Post;
 import com.example.hanghaeblog.entity.User;
+import com.example.hanghaeblog.entity.UserRoleEnum;
 import com.example.hanghaeblog.jwt.JwtUtil;
 import com.example.hanghaeblog.repository.PostRepository;
 import com.example.hanghaeblog.repository.UserRepository;
@@ -98,7 +99,7 @@ public class PostService {
                 () -> new NullPointerException("해당 글이 존재하지 않습니다.")
         );
 
-        if (!post.getUser().equals(user)) {
+        if (!post.getUser().equals(user) || user.getRole().equals(UserRoleEnum.ADMIN)) { // 작성자거나 ADMIN 권한일 때
             throw new IllegalArgumentException("글 작성자가 아닙니다.");
         }
 
@@ -120,7 +121,7 @@ public class PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("선택하신 게시글이 존재하지 않습니다."));
 
-        if (post.getUser().equals(user)) {
+        if (post.getUser().equals(user) || user.getRole().equals(UserRoleEnum.ADMIN)) { // 작성자거나 ADMIN 권한일 때
             postRepository.delete(post);
             return "삭제 성공했습니다.";
         }else {

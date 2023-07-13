@@ -22,7 +22,7 @@ import java.util.List;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("user")
+@RequestMapping("/user")
 public class UserController {
     private final UserService userService;
     private final JwtUtil jwtUtil;
@@ -30,15 +30,15 @@ public class UserController {
     // 로그인 성공 시 토큰 발급
     @PostMapping("/login-page")
     public  ResponseEntity<String> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
-        String token = jwtUtil.createToken(userService.login(loginRequestDto, response)); // 로그인 수행, username 받아오기 > token 만들기
-            return ResponseEntity.status(HttpStatus.OK).body("로그인 성공");
+        userService.login(loginRequestDto, response);
+        return ResponseEntity.status(HttpStatus.OK).body("로그인 성공");
     }
 
     // 회원가입 API
     @ResponseBody
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@Valid  @RequestBody SignupRequestDto requestDto) {
-        User user = userService.signup(requestDto);
+        userService.signup(requestDto);
             return ResponseEntity.status(HttpStatus.OK).body("회원가입 성공");
     }
 }

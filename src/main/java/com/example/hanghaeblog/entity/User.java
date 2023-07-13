@@ -20,8 +20,16 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    public User(String username, String password){
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    //- EnumType을 DB 컬럼에 저장할 때 사용하는 애너테이션입니다.
+    //- `EnumType.*STRING`* 옵션을 사용하면 **Enum의 이름을 DB에 그대로 저장합니다.
+    //- `USER(Authority.USER)` → USER
+
+    private UserRoleEnum role;
+    public User(String username, String password, UserRoleEnum role){
         this.username = username;
         this.password = password;
+        this.role = role;
     }
 }

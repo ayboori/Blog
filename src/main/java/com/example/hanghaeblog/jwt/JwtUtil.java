@@ -1,5 +1,6 @@
 package com.example.hanghaeblog.jwt;
 
+import com.example.hanghaeblog.entity.UserRoleEnum;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -49,12 +50,13 @@ public class JwtUtil {
 
     // 1. JWT 토큰 생성
     // 아래의 모든 값을 넣을 필요는 없다
-    public String createToken(String username) {
+    public String createToken(String username, UserRoleEnum role) {
         Date date = new Date();
 
         return BEARER_PREFIX +
                 Jwts.builder()
                         .setSubject(username) // 사용자 식별자값(ID) // PK 등의 다른 값을 넣어도 됨
+                        .claim(AUTHORIZATION_KEY, role)     // 사용자 권한 (key, value)
                         .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간
                         .setIssuedAt(date) // 발급일
                         .signWith(key, signatureAlgorithm) // 암호화 알고리즘 (KEY, 알고리즘을 넣어서 암호화 시킴)
