@@ -2,15 +2,12 @@ package com.example.hanghaeblog.config;
 
 import com.example.hanghaeblog.jwt.JwtUtil;
 import com.example.hanghaeblog.security.JwtAuthenticationFilter;
-import com.example.hanghaeblog.security.JwtAuthorizationFilter;
-import com.example.hanghaeblog.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -61,8 +58,8 @@ public class WebSecurityConfig {
                         // resources 접근 허용 설정
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         // "/api/"로 시작하는 요청 모두 접근 허가
-                        .requestMatchers("/user/**").permitAll() // 메인 페이지 요청 허가
-                        .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/user/**").permitAll() // 유저 페이지 요청 허가
+                        .requestMatchers("/api/**").permitAll() // api (post / reply) 요청 허가
                         .requestMatchers(HttpMethod.GET, "/api/posts").permitAll()
                         // 그 외 모든 요청 인증 처리
                         .anyRequest().authenticated()
@@ -74,10 +71,8 @@ public class WebSecurityConfig {
         );
 
         // 필터 관리
-        http.addFilterBefore(jwtAuthenticationFilter(), JwtAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-
 }

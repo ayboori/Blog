@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "users") // 아래의 값으로 생성될 테이블의 이름 지정
+@Table(name = "user") // 아래의 값으로 생성될 테이블의 이름 지정
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
