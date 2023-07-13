@@ -1,42 +1,49 @@
 package com.example.hanghaeblog.entity;
-
 import com.example.hanghaeblog.dto.PostRequestDto;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
+// 게시글 엔티티
+
+@Entity
 @Getter
 @Setter
+@Table(name = "post")
 @NoArgsConstructor
-@AllArgsConstructor
-public class Post {
+@EntityListeners(AuditingEntityListener.class)
+public class Post extends Timestamped{
+    // 제목, 작성자명, 작성 내용, 작성 날짜
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column (nullable = false)
     private String title;
-    private String userName;
+    @Column (nullable = false)
     private String content;
-    private LocalDateTime localDate;
-    private String password;
+    @Column (nullable = false)
+    private String username;
 
-    public Post(PostRequestDto requestDto, User user) { // 회원 이름, 비밀번호는 user에서 가져오기
+    // 외래키로 user_id 받아오기
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    public Post(PostRequestDto requestDto, User user) {
         this.title = requestDto.getTitle();
-        this.userName = user.getUsername();
         this.content = requestDto.getContent();
-        this.password = user.getPassword();
-        this.localDate = requestDto.getLocalDate();  // 현재 시간
+        this.user = user;
+        this.username = user.getUsername();
     }
 
-    // 수정
     public void update(PostRequestDto requestDto) {
-        this.id = requestDto.getId();
         this.title = requestDto.getTitle();
-        this.userName = requestDto.getUserName();
         this.content = requestDto.getContent();
-        this.password = requestDto.getPassword();
-        this.localDate = LocalDateTime.now();  // 현재 시간
     }
 }

@@ -1,6 +1,4 @@
 package com.example.hanghaeblog.dto;
-
-
 import com.example.hanghaeblog.entity.Post;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,14 +15,17 @@ import java.time.format.DateTimeFormatter;
 @AllArgsConstructor
 public class PostResponseDto{
     private String title;
-    private String userName;
+    private String username;
     private String content;
-    private LocalDateTime localDate;
+    private LocalDateTime createdAt;
+    private LocalDateTime modifiedAt;
 
+    // 선택한 게시글의 제목, 작성자명(username), 작성 날짜, 작성 내용을 조회하기
     public PostResponseDto(Post post) {
         this.title = post.getTitle();
-        this.userName = post.getUserName();
+        this.username = post.getUsername();
         this.content = post.getContent();
-        this.localDate = post.getLocalDate();
+        this.createdAt = post.getCreatedAt();
+        this.modifiedAt = post.getModifiedAt();
     }
 }

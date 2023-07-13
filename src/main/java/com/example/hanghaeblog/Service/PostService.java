@@ -10,15 +10,15 @@ import com.example.hanghaeblog.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+
 @Service
 @RequiredArgsConstructor
 public class PostService {
-    private final Map<Long, Post> postList = new HashMap<>();
-    private final JdbcTemplate jdbcTemplate;
+
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
@@ -35,7 +35,6 @@ public class PostService {
 
         // 토큰 체크 추가
         User user = checkToken(request);
-
         if (user == null) {
             throw new IllegalArgumentException("인증되지 않은 사용자입니다.");
         }
@@ -44,30 +43,38 @@ public class PostService {
         Post post = new Post(requestDto,user);
 
         //DB 저장
-        Post savePost = postRepository.save(post);
+        postRepository.save(post);
 
         // Entity -> ResponseDto
-        return new PostResponseDto(savePost);
+        return new PostResponseDto(post);
     }
 
     // 전체 게시글 목록 조회 API
     //- 제목, 작성자명, 작성 내용, 작성 날짜를 조회하기
     //- 작성 날짜 기준 내림차순으로 정렬하기
     public List<PostResponseDto> getPosts() {
-        // DB 조회
-        return postRepository.findAll();
+        // DB 조회 후 List 객체에 담기
+        List<Post> postList = postRepository.findAllByOrderByCreatedAtDesc();
+
+        // Dto 객체에 담기 위해 List 배열 생성
+        List<PostResponseDto> postResponseDto = new ArrayList<>();
+
+        // Dto 객체에 담기
+        for (Post post : postList) {
+            postResponseDto.add(new PostResponseDto(post));
+        }
+
+        return postResponseDto;
     }
 
     // 선택한 게시글 조회 API
     //    - 선택한 게시글의 제목, 작성자명, 작성 날짜, 작성 내용을 조회하기
     //    (검색 기능이 아닙니다. 간단한 게시글 조회만 구현해주세요.)
+    @Transactional(readOnly = true)
     public PostResponseDto getPost(Long id) {
         // DB에서 게시글 조회
-        Post post = postRepository.findById(id);
-
-        if (post == null) {
-            throw new NullPointerException("선택한 메모는 존재하지 않습니다.");
-        }
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("선택하신 게시글이 존재하지 않습니다."));
 
         // Entity -> ResponseDto
         return new PostResponseDto(post);
@@ -77,39 +84,25 @@ public class PostService {
     // 선택한 게시글 수정 API
     //    - 수정을 요청할 때 수정할 데이터와 비밀번호를 같이 보내서 서버에서 비밀번호 일치 여부를 확인 한 후
     //    - 제목, 작성자명, 작성 내용을 수정하고 수정된 게시글을 Client 로 반환하기
+    @Transactional
     public PostResponseDto updatePost(Long id,  PostRequestDto requestDto, HttpServletRequest request) {
-
-        // 토큰 유효성 체크
+        // 토큰 체크 추가
         User user = checkToken(request);
-        if(user == null) {
+
+        if (user == null) {
             throw new IllegalArgumentException("인증되지 않은 사용자입니다.");
         }
 
-        // 글 읽어와서 저장
-        Post post = postRepository.findById(id);
+        Post post = postRepository.findById(id).orElseThrow(
+                () -> new NullPointerException("해당 글이 존재하지 않습니다.")
+        );
 
-        // 글 존재하지 않을 경우 오류
-        if (post == null) {
-            throw new NullPointerException("선택한 메모는 존재하지 않습니다.");
+        if (!post.getUser().equals(user)) {
+            throw new IllegalArgumentException("글 작성자가 아닙니다.");
         }
 
-        // 변경한 값 이외에는 다 세팅해주기
-        requestDto.setId(id); // Id 값을 설정
-        requestDto.setUserName(user.getUsername()); // userName 값을 설정
-        requestDto.setPassword(user.getPassword()); // Password 값을 설정
-
-      if (post.getUserName().equals(user.getUsername())) { // 로그인 사용자 == 작성자
-          // RequestDto -> Entity
-
-          // Post 수정
-          post.update(requestDto);
-          postRepository.update(id, requestDto);
-
-          PostResponseDto postResponseDto = new PostResponseDto(post);
-          return postResponseDto;
-            } else {
-                throw new IllegalArgumentException("수정 권한이 없는 사용자입니다.");
-            }
+        post.update(requestDto);
+        return new PostResponseDto(post);
     }
 
     // 선택한 게시글 삭제 API
@@ -122,20 +115,14 @@ public class PostService {
             throw new IllegalArgumentException("인증되지 않은 사용자입니다.");
         }
 
-        // 글 읽어와서 저장
-        Post post = postRepository.findById(id);
+        // 글 읽어와서 저장, 해당 메모 DB에 존재하는지 확인
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("선택하신 게시글이 존재하지 않습니다."));
 
-        // 글 존재하지 않을 경우 오류
-        if (post == null) {
-            throw new NullPointerException("선택한 메모는 존재하지 않습니다.");
-        }
-
-        // 해당 메모가 DB에 존재하는지, 사용자 = 작성자인지 확인
-        if (postList.containsKey(id) && postList.get(id).equals(checkToken(request).getId())) {
-            // 해당 메모 삭제하기
-            postRepository.delete(id);
+        if (post.getUser().equals(user)) {
+            postRepository.delete(post);
             return "삭제 성공했습니다.";
-        } else {
+        }else {
             throw new IllegalArgumentException("선택한 메모는 존재하지 않습니다.");
         }
     }
