@@ -31,6 +31,7 @@ public class PostService {
     // - 토큰을 검사하여, 유효한 토큰일 경우에만 게시글 작성 가능
     //- 제목, 작성 내용을 저장
     // 저장된 게시글을 Client 로 반환하기(username은 로그인 된 사용자)
+    @Transactional
     public PostResponseDto createPost(PostRequestDto requestDto, HttpServletRequest request) {
 
         // 토큰 체크 추가
