@@ -16,9 +16,9 @@ public class SignupRequestDto {
     private String username;
 
 
-    // 최소 8자 이상, 15자 이하이며 알파벳 대소문자(a~z, A~Z), 숫자(0~9)
+    // 최소 8자 이상, 15자 이하이며 알파벳 대소문자(a~z, A~Z), 숫자(0~9), 특수문자
     @NotBlank
     @Size(min = 8, max = 15, message = "최소 8자 이상, 15자 이하")
-    @Pattern(regexp = "^[a-zA-Z0-9]*$", message = "알파벳 소문자(a~z),알파벳 대문자(A~Z), 숫자(0~9)")
+    @Pattern(regexp = "^[a-zA-Z0-9`~!@#$%^&*()-_=+\\|[]{};:'\",.<>/?]{8,24}$", message = "알파벳 소문자(a~z),알파벳 대문자(A~Z), 숫자(0~9), 특수문자")
     private String password;
 }
