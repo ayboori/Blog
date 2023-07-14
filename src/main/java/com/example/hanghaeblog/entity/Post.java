@@ -5,6 +5,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.relational.core.sql.Like;
+
+import java.util.ArrayList;
+import java.util.List;
 
 // 게시글 엔티티
 
@@ -25,11 +29,22 @@ public class Post extends Timestamped{
     private String content;
     @Column (nullable = false)
     private String username;
+    @Column(name = "likes", nullable = false)
+    private int likeCount = 0; // default = 0
 
     // 외래키로 user_id 받아오기
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    // 게시글 조회 시 댓글 조회
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    private List<Reply> commentList = new ArrayList<>();
+
+    // 게시글 조회 시 좋아요 갯수 조회
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    private List<HeartPost> likes = new ArrayList<>();
+
 
     public Post(PostRequestDto requestDto, User user) {
         this.title = requestDto.getTitle();
